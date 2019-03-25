@@ -1,0 +1,27 @@
+{
+  "name": "chatbot",
+  "version": "1.0.0",
+  "description": "chatbot",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "iiitb",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MonkeyDchaiti/DevOpsProject.git"
+  },
+  "keywords": [
+    "chatbot"
+  ],
+  "bugs": {
+    "url": "https://github.com/MonkeyDchaiti/DevOpsProject/issues"
+  },
+  "homepage": "https://github.com/MonkeyDchaiti/DevOpsProject#readme"
+}
