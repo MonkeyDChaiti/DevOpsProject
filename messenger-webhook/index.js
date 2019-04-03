@@ -1,6 +1,7 @@
 'use strict';
 const API_AI_TOKEN = "1ee7f7c6ade444b9b25a7e0226f0a024";
 const apiAiClient = require('apiai')(API_AI_TOKEN);
+const MongoClient = require('mongodb').MongoClient;
 
 const PAGE_ACCESS_TOKEN="EAADkck8r4ZCMBABkOhnJTZAemELZAXZBq4sNz9U2FGd1JpB7wZB7OCMdDcc7m7bF5uXUzg7Q4AmR3gdWb3neuOMKrRelAFQpz72M2Wl1NxQMjMInXJ7ye8ZAqIZBelQCoyf9KOjN4ZCCUfrio0dgKLC4eHwbbDvRaKDkqaXEr09jvQZDZD";
 const request=require("request"),
@@ -50,18 +51,19 @@ let challenge = req.query['hub.challenge'];
 if(mode && token){
 
  if(mode === 'subscribe' && token === VERIFY_TOKEN){
-  console.log('WEBHOOK_VERIFIED');
-  res.status(200).send(challenge);
+  	console.log('WEBHOOK_VERIFIED');
+  	res.status(200).send(challenge);
  }
  else
  {
-  res.sendStatus(403);
+  	res.sendStatus(403);
  }
 }
 });
 
 
 function handleMessage(sender_psid, received_message){
+
 let result;
 let apiaiSession = apiAiClient.textRequest(received_message.text,{sessionId:'chatbot'});
 
@@ -70,8 +72,27 @@ if(received_message.text){
 
 apiaiSession.on('response',(response) => {
 result = response.result.fulfillment.speech;
-callSendAPI(sender_psid, result);
+console.log(result);
+
+if(result === "Fee"){
+// Connect to the db
+MongoClient.connect("mongodb://localhost:27017/",function (err, db){
+	var dbo=db.db("queries");
+	dbo.collection('fees',function(err,collection) {
+		collection.find().toArray(function(err, items){
+		if(err) throw err;
+		var ans = "Tuition Fees: Rs." + items[0].TuitionFee + "\nAdmission Form Fees : Rs."+items[0].AdmissionFormFee + "\nMess and Hostel Fees: Rs." + items[0].MessHostelFee;
+		console.log(ans)
+		callSendAPI(sender_psid, ans);
+		});
+	});
 });
+}
+else{
+	callSendAPI(sender_psid,result);
+}
+});
+
 }else if (received_message.attachments) {
     // Get the URL of the message attachment
     let attachment_url = received_message.attachments[0].payload.url;
